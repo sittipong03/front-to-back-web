@@ -5,22 +5,23 @@ import axios from 'axios'
 import Buttons from '../../components/form/Buttons'
 import { yupResolver } from "@hookform/resolvers/yup"
 import { registerSchema } from '../../utils/validator'
+import { actionRegister } from '../../api/auth'
 
 function Register() {
 
-  const { handleSubmit, register, formState } = useForm({
-    resolver: yupResolver(registerSchema)
-  }) //ถ้าจุดที่ด้านหลัง useForm จะเห็น fn ข้างใน บรรทัดนี้คือ destruct ของ function ข้างใน
+  const { handleSubmit, register, formState , reset} = useForm({ //ถ้าจุดที่ด้านหลัง useForm จะเห็น fn ข้างใน บรรทัดนี้คือ destruct ของ function ข้างใน
+    resolver: yupResolver(registerSchema) // validate ข้อมูลจาก backend , resolver : <- ตรงนี้ใช้ของเจ้าไหนก้ได้อันนรี้ yupResolver ข้างใน schema ที่จาก back
+  }) 
   const { isSubmitting ,errors } = formState // destruct formstate ข้างบน formstate 
-  console.log('errors', errors)
 
   const hdlSubmit = async (value) => {
     await new Promise((resolve, reject) => setTimeout(resolve, 2000))
 
     try {
       // console.log(value)
-      const res = await axios.post("http://localhost:8000/auth/register", value) // register endpoint 
+      const res = await actionRegister(value) // register endpoint 
       createAlert("success", "Register success")
+      reset()
     } catch (error) {
       // console.log(error)
       createAlert("info", error.response?.data?.message) // โชว์สิ่งที่ส่ง error ทั้งหมดมาจาก backend ใส่ ? เผื่อไม่เจอ จะ return undefind
